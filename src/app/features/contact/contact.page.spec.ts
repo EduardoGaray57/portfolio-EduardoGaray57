@@ -105,15 +105,36 @@ describe('ContactPageComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('GitHub');
   });
 
-  it('should have mailto form', () => {
+  it('should have contact form with required fields', () => {
     createComponent(createMockService());
     expect(fixture.nativeElement.textContent).toContain('Envíame un Mensaje');
     expect(fixture.nativeElement.textContent).toContain('Enviar Mensaje');
+    expect(fixture.nativeElement.textContent).toContain('Nombre');
+    expect(fixture.nativeElement.textContent).toContain('Mensaje');
   });
 
-  it('should show mailto notice', () => {
+  it('should disable submit button while loading', () => {
     createComponent(createMockService());
-    expect(fixture.nativeElement.textContent).toContain('Se abrirá tu cliente de correo');
+    fixture.componentInstance.status.set('loading');
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button[type="submit"]');
+    expect(button.disabled).toBe(true);
+    expect(button.textContent).toContain('Enviando...');
+  });
+
+  it('should show success message after submission', () => {
+    createComponent(createMockService());
+    fixture.componentInstance.status.set('success');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Mensaje enviado correctamente');
+  });
+
+  it('should show error message on failure', () => {
+    createComponent(createMockService());
+    fixture.componentInstance.status.set('error');
+    fixture.componentInstance.errorMessage.set('Error de prueba');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Error de prueba');
   });
 
   it('should have section heading', () => {

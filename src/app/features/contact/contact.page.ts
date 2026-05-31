@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ProfileService } from '../../core/services/profile.service';
 import { SectionHeadingComponent } from '../../shared/components/section-heading/section-heading.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -7,7 +8,12 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 @Component({
   selector: 'app-contact-page',
   standalone: true,
-  imports: [SectionHeadingComponent, LoadingSpinnerComponent, ErrorStateComponent],
+  imports: [
+    FormsModule,
+    SectionHeadingComponent,
+    LoadingSpinnerComponent,
+    ErrorStateComponent,
+  ],
   template: `
     <section class="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
       <app-section-heading
@@ -46,7 +52,7 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 
               <!-- Phone -->
               <a
-                [href]="'tel:' + p.contacts.phone.replace(/\\s/g, '')"
+                [href]="'tel:' + p.contacts.phone.replace(/\s/g, '')"
                 class="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-green-200 hover:bg-green-50/50 transition-colors group"
               >
                 <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -115,9 +121,8 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
             </h2>
 
             <form
-              [action]="'mailto:' + p.contacts.email"
-              method="GET"
-              enctype="text/plain"
+              #contactForm="ngForm"
+              (ngSubmit)="onSubmit()"
               class="space-y-5"
             >
               <div>
@@ -126,11 +131,15 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
                 </label>
                 <input
                   id="name"
-                  name="subject"
+                  name="name"
                   type="text"
                   required
+                  minlength="2"
+                  maxlength="100"
                   placeholder="Tu nombre"
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400"
+                  [(ngModel)]="name"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  [disabled]="status() === 'loading'"
                 />
               </div>
 
@@ -140,11 +149,15 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
                 </label>
                 <input
                   id="email"
-                  name="cc"
+                  name="email"
                   type="email"
                   required
+                  email
+                  maxlength="200"
                   placeholder="tu@email.com"
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400"
+                  [(ngModel)]="email"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  [disabled]="status() === 'loading'"
                 />
               </div>
 
@@ -154,27 +167,55 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
                 </label>
                 <textarea
                   id="message"
-                  name="body"
+                  name="message"
                   required
+                  minlength="10"
+                  maxlength="5000"
                   rows="5"
                   placeholder="Escribe tu mensaje aquí..."
-                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400 resize-y min-h-[120px]"
+                  [(ngModel)]="message"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400 resize-y min-h-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
+                  [disabled]="status() === 'loading'"
                 ></textarea>
               </div>
 
+              <!-- Submit button -->
               <button
                 type="submit"
-                class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/25"
+                [disabled]="status() === 'loading' || contactForm.invalid"
+                class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-lg shadow-blue-600/25 disabled:shadow-none"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-                Enviar Mensaje
+                @if (status() === 'loading') {
+                  <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Enviando...
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                  Enviar Mensaje
+                }
               </button>
 
-              <p class="text-xs text-gray-400 mt-3">
-                Se abrirá tu cliente de correo predeterminado. No hay backend — tu mensaje se envía directamente por email.
-              </p>
+              <!-- Success message -->
+              @if (status() === 'success') {
+                <div class="p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm">
+                  <p class="font-medium">✅ Mensaje enviado correctamente</p>
+                  <p class="mt-1">Gracias por contactarme. Te responderé a la brevedad.</p>
+                </div>
+              }
+
+              <!-- Error message -->
+              @if (status() === 'error') {
+                <div class="p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+                  <p class="font-medium">❌ {{ errorMessage() }}</p>
+                  <p class="mt-1">Podés escribirme directamente a
+                    <a [href]="'mailto:' + p.contacts.email" class="underline font-medium">{{ p.contacts.email }}</a>
+                  </p>
+                </div>
+              }
             </form>
           </div>
         </div>
@@ -189,4 +230,50 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 })
 export class ContactPageComponent {
   protected readonly profile = inject(ProfileService);
+
+  readonly name = signal('');
+  readonly email = signal('');
+  readonly message = signal('');
+  readonly status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
+  readonly errorMessage = signal('');
+
+  async onSubmit(): Promise<void> {
+    if (this.status() === 'loading') return;
+
+    this.status.set('loading');
+    this.errorMessage.set('');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: this.name(),
+          email: this.email(),
+          message: this.message(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        this.errorMessage.set(data.error ?? 'Error al enviar el mensaje.');
+        this.status.set('error');
+        return;
+      }
+
+      this.status.set('success');
+      this.name.set('');
+      this.email.set('');
+      this.message.set('');
+
+      // Reset success message after 8 seconds
+      setTimeout(() => {
+        this.status.set('idle');
+      }, 8000);
+    } catch {
+      this.errorMessage.set('Error de conexión. Verifica tu internet e intenta de nuevo.');
+      this.status.set('error');
+    }
+  }
 }

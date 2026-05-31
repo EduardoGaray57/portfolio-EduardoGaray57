@@ -42,6 +42,8 @@ __screenshots__/
 # Environment variables (GITHUB_TOKEN for build script, etc.)
 .env
 .env.*
+# Track the example file (it has no secrets, only field names)
+!.env.example
 
 # Cloudflare local state
 .wrangler/
