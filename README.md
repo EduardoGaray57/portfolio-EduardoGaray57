@@ -21,33 +21,33 @@ Personal portfolio built with Angular 21, TailwindCSS, and TypeScript. Features 
 ## Prerequisites
 
 - Node.js 22+
-- npm 11+
+- [pnpm](https://pnpm.io/) 11+ (install: `npm install -g pnpm`)
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## Development
 
 ```bash
 # Start dev server at http://localhost:4200
-ng serve
+pnpm start
 
 # Run unit tests
-ng test
+pnpm test
 
 # Run tests with coverage
-ng test --code-coverage
+pnpm test -- --code-coverage
 
 # Production build
-ng build
+pnpm build
 ```
 
 Build output goes to `dist/portfolio/browser`.
 
 ## GitHub Projects Sync
 
-A prebuild script fetches public repos from GitHub and generates `src/assets/data/projects.json`:
+A prebuild script fetches public repos from GitHub and generates `src/assets/data/projects.json`. It runs automatically before every `pnpm build`:
 
 ```bash
 node scripts/fetch-github-projects.js
@@ -63,7 +63,9 @@ export GITHUB_TOKEN=your_token_here
 
 ## Deploy
 
-The project deploys to Cloudflare Pages. See [`DEPLOY.md`](./DEPLOY.md) for instructions.
+The project is configured for Cloudflare Pages via `wrangler.toml`. See [`DEPLOY.md`](./DEPLOY.md) for instructions.
+
+Cloudflare auto-detects pnpm from the lockfile — no extra config needed.
 
 ## Architecture
 
