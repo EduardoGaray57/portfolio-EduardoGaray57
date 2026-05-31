@@ -1,0 +1,74 @@
+{
+  "work": [
+    {
+      "id": "tesis-ucentral",
+      "role": "Desarrollador Python — Proyecto de Tesis",
+      "organization": "Universidad Central de Chile",
+      "startDate": "2024-03",
+      "endDate": "2025-01",
+      "description": [
+        "Desarrollé una herramienta de simulación y visualización 3D de campos magnéticos usando Python, NumPy y PyVista, bajo supervisión académica.",
+        "Apliqué análisis de datos científicos para calcular densidad de flujo magnético en geometrías complejas.",
+        "Documenté el proceso técnico y presenté resultados ante comité evaluador, obteniendo distinción."
+      ],
+      "highlights": [
+        "Visualización 3D de campos magnéticos con PyVista",
+        "Análisis de datos científicos con NumPy",
+        "Presentación ante comité evaluador con distinción"
+      ]
+    },
+    {
+      "id": "arduino-ucentral",
+      "role": "Práctica Operacional — Arduino / Sistemas Embebidos",
+      "organization": "Universidad Central de Chile",
+      "startDate": "2023-03",
+      "endDate": "2023-08",
+      "description": [
+        "Programé microcontroladores Arduino en C++ para automatización de procesos físicos.",
+        "Realicé pruebas y validaciones de hardware-software en entornos de laboratorio."
+      ],
+      "highlights": [
+        "Programación de microcontroladores en C++",
+        "Automatización de procesos físicos",
+        "Validación hardware-software en laboratorio"
+      ]
+    },
+    {
+      "id": "poptimize",
+      "role": "Práctica Profesional — Desarrollo Backend",
+      "organization": "Poptimize",
+      "startDate": "2021-12",
+      "endDate": "2022-03",
+      "description": [
+        "Desarrollé módulos del backend en Django, participando en el ciclo completo de implementación.",
+        "Realicé pruebas funcionales, validaciones de datos y corrección de errores en entorno de staging.",
+        "Colaboré con el equipo de desarrollo aplicando metodologías de trabajo ágil."
+      ],
+      "highlights": [
+        "Desarrollo backend con Django",
+        "Pruebas funcionales y validación en staging",
+        "Metodologías ágiles"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "ucentral-ing",
+      "degree": "Ingeniería Civil en Computación e Informática",
+      "institution": "Universidad Central de Chile",
+      "startDate": null,
+      "endDate": "2025-01",
+      "description": ["Titulado con distinción. Nota 5,3."],
+      "highlights": ["Distinción", "Nota 5,3"]
+    },
+    {
+      "id": "novo-horizonte",
+      "degree": "Técnico de Nivel Medio — Contador",
+      "institution": "Colegio Polivalente Novo Horizonte, Quilicura",
+      "startDate": null,
+      "endDate": "2017",
+      "description": ["Registrado SEREMI RM"],
+      "highlights": []
+    }
+  ]
+}

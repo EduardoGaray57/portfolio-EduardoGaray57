@@ -1,0 +1,16 @@
+{
+  "fullName": "Eduardo Marcelo Garay Aguayo",
+  "title": "Ingeniero Civil en Computación e Informática",
+  "tagline": "Fullstack Developer · Python & Django · React & Angular",
+  "bio": "Ingeniero Civil en Computación e Informática titulado con distinción de la Universidad Central de Chile. Experiencia en desarrollo backend con Python y Django, implementación de APIs REST, y visualización 3D de datos científicos. También desarrollo frontend con React y Angular, con despliegues en Railway, Vercel y Cloudflare. Motivado por aplicar soluciones tecnológicas en contextos empresariales reales, con capacidad de adaptación rápida y orientación al trabajo colaborativo.",
+  "graduationNote": 5.3,
+  "graduatedWithDistinction": true,
+  "university": "Universidad Central de Chile",
+  "contacts": {
+    "email": "eduardomarcelo03@gmail.com",
+    "phone": "+56 9 5414 2184",
+    "location": "Quilicura, Santiago, Chile",
+    "linkedin": "https://linkedin.com/in/eduardo-garay-9b067b16b",
+    "github": "https://github.com/EduardoGaray57"
+  }
+}

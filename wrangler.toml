@@ -1,0 +1,13 @@
+# Cloudflare Pages configuration (optional — the dashboard works too)
+# Deploy via: npx wrangler pages deploy dist/portfolio/browser
+# Or connect your GitHub repo in the Cloudflare Pages dashboard.
+
+name = "eduardo-garay-portfolio"
+compatibility_date = "2026-05-22"
+
+[build]
+command = "npm run build"
+output_dir = "dist/portfolio/browser"
+
+[build.environment]
+NODE_VERSION = "22"

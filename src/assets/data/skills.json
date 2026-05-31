@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "id": "languages",
+      "label": "Lenguajes",
+      "skills": ["Python", "JavaScript", "Java", "SQL", "TypeScript", "C++"]
+    },
+    {
+      "id": "frameworks",
+      "label": "Frameworks & Librerías",
+      "skills": ["Django", "Django REST Framework", "React", "Angular", "Vite", "Tailwind CSS", "NumPy", "PyVista", "Pandas"]
+    },
+    {
+      "id": "databases",
+      "label": "Bases de Datos",
+      "skills": ["PostgreSQL", "SQL"]
+    },
+    {
+      "id": "apis",
+      "label": "APIs & Arquitectura",
+      "skills": ["REST APIs", "JWT", "Swagger/OpenAPI", "Autenticación"]
+    },
+    {
+      "id": "devops",
+      "label": "DevOps & Deploy",
+      "skills": ["Docker", "Docker Compose", "Railway", "Vercel", "Cloudflare", "Git", "GitHub"]
+    },
+    {
+      "id": "methodologies",
+      "label": "Metodologías",
+      "skills": ["Desarrollo Ágil", "Control de Versiones", "Documentación Técnica"]
+    }
+  ]
+}
