@@ -6,7 +6,7 @@ name = "eduardo-garay-portfolio"
 compatibility_date = "2026-05-22"
 
 [build]
-command = "npm run build"
+command = "pnpm build"
 output_dir = "dist/portfolio/browser"
 
 [build.environment]
