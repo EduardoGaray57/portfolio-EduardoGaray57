@@ -1,5 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, signal, viewChild, ElementRef } from '@angular/core';
 import { ProfileService } from '../../core/services/profile.service';
 import { SectionHeadingComponent } from '../../shared/components/section-heading/section-heading.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -9,7 +8,6 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
   selector: 'app-contact-page',
   standalone: true,
   imports: [
-    FormsModule,
     SectionHeadingComponent,
     LoadingSpinnerComponent,
     ErrorStateComponent,
@@ -121,8 +119,7 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
             </h2>
 
             <form
-              #contactForm="ngForm"
-              (ngSubmit)="onSubmit()"
+              (submit)="onSubmit($event)"
               class="space-y-5"
             >
               <div>
@@ -130,14 +127,15 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
                   Nombre
                 </label>
                 <input
+                  #nameInput
                   id="name"
-                  name="name"
                   type="text"
                   required
                   minlength="2"
                   maxlength="100"
                   placeholder="Tu nombre"
-                  [(ngModel)]="name"
+                  [value]="name()"
+                  (input)="name.set(nameInput.value)"
                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   [disabled]="status() === 'loading'"
                 />
@@ -148,14 +146,14 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
                   Email
                 </label>
                 <input
+                  #emailInput
                   id="email"
-                  name="email"
                   type="email"
                   required
-                  email
                   maxlength="200"
                   placeholder="tu@email.com"
-                  [(ngModel)]="email"
+                  [value]="email()"
+                  (input)="email.set(emailInput.value)"
                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   [disabled]="status() === 'loading'"
                 />
@@ -166,23 +164,31 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
                   Mensaje
                 </label>
                 <textarea
+                  #messageInput
                   id="message"
-                  name="message"
                   required
                   minlength="10"
                   maxlength="5000"
                   rows="5"
                   placeholder="Escribe tu mensaje aquí..."
-                  [(ngModel)]="message"
+                  [value]="message()"
+                  (input)="message.set(messageInput.value)"
                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors text-gray-900 placeholder-gray-400 resize-y min-h-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
                   [disabled]="status() === 'loading'"
                 ></textarea>
               </div>
 
+              <!-- Validation errors -->
+              @if (validationError()) {
+                <div class="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                  {{ validationError() }}
+                </div>
+              }
+
               <!-- Submit button -->
               <button
                 type="submit"
-                [disabled]="status() === 'loading' || contactForm.invalid"
+                [disabled]="status() === 'loading'"
                 class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-lg shadow-blue-600/25 disabled:shadow-none"
               >
                 @if (status() === 'loading') {
@@ -234,24 +240,60 @@ export class ContactPageComponent {
   readonly name = signal('');
   readonly email = signal('');
   readonly message = signal('');
+  readonly validationError = signal('');
   readonly status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
   readonly errorMessage = signal('');
 
-  async onSubmit(): Promise<void> {
+  private readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  onSubmit(event: SubmitEvent): void {
+    event.preventDefault();
     if (this.status() === 'loading') return;
 
-    this.status.set('loading');
+    this.validationError.set('');
     this.errorMessage.set('');
+
+    // ── Manual validation ──────────────────────────────────────────
+    const name = this.name().trim();
+    const email = this.email().trim().toLowerCase();
+    const message = this.message().trim();
+
+    if (!name || name.length < 2) {
+      this.validationError.set('El nombre debe tener al menos 2 caracteres.');
+      return;
+    }
+    if (name.length > 100) {
+      this.validationError.set('El nombre no puede superar los 100 caracteres.');
+      return;
+    }
+    if (!email || !this.EMAIL_REGEX.test(email)) {
+      this.validationError.set('Por favor ingresa un email válido.');
+      return;
+    }
+    if (email.length > 200) {
+      this.validationError.set('El email no puede superar los 200 caracteres.');
+      return;
+    }
+    if (!message || message.length < 10) {
+      this.validationError.set('El mensaje debe tener al menos 10 caracteres.');
+      return;
+    }
+    if (message.length > 5000) {
+      this.validationError.set('El mensaje no puede superar los 5000 caracteres.');
+      return;
+    }
+
+    this.send({ name, email, message });
+  }
+
+  private async send(body: { name: string; email: string; message: string }): Promise<void> {
+    this.status.set('loading');
 
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: this.name(),
-          email: this.email(),
-          message: this.message(),
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -267,10 +309,8 @@ export class ContactPageComponent {
       this.email.set('');
       this.message.set('');
 
-      // Reset success message after 8 seconds
-      setTimeout(() => {
-        this.status.set('idle');
-      }, 8000);
+      // Reset after 8 seconds
+      setTimeout(() => this.status.set('idle'), 8000);
     } catch {
       this.errorMessage.set('Error de conexión. Verifica tu internet e intenta de nuevo.');
       this.status.set('error');
