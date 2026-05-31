@@ -39,6 +39,13 @@ testem.log
 /typings
 __screenshots__/
 
+# Environment variables (GITHUB_TOKEN for build script, etc.)
+.env
+.env.*
+
+# Cloudflare local state
+.wrangler/
+
 # System files
 .DS_Store
 Thumbs.db
