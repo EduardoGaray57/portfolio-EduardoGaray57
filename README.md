@@ -1,59 +1,90 @@
-# Portfolio
+# Portfolio — Eduardo Garay
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.12.
+Personal portfolio built with Angular 21, TailwindCSS, and TypeScript. Features signal-based state management, lazy-loaded feature modules, and automated GitHub project fetching.
 
-## Development server
+🔗 **Live URL**: _pending Cloudflare Pages deploy_
 
-To start a local development server, run:
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Angular 21.2 (standalone components) |
+| Language | TypeScript 5.9 (strict mode) |
+| Styling | TailwindCSS 3.4 |
+| State | Angular Signals (`signal`, `computed`, `DataState<T>`) |
+| Testing | Vitest 4.0 via `ng test` |
+| Deploy | Cloudflare Pages |
+| Build | Angular CLI (Vite/esbuild) |
+
+## Prerequisites
+
+- Node.js 22+
+- npm 11+
 
 ```bash
+npm install
+```
+
+## Development
+
+```bash
+# Start dev server at http://localhost:4200
 ng serve
-```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+# Run unit tests
+ng test
 
-## Code scaffolding
+# Run tests with coverage
+ng test --code-coverage
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+# Production build
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Build output goes to `dist/portfolio/browser`.
 
-## Running unit tests
+## GitHub Projects Sync
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+A prebuild script fetches public repos from GitHub and generates `src/assets/data/projects.json`:
 
 ```bash
-ng e2e
+node scripts/fetch-github-projects.js
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The script works without authentication (60 req/hr limit). For a higher rate limit (5000/hr), set:
 
-## Additional Resources
+```bash
+export GITHUB_TOKEN=your_token_here
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+> **⚠️ Never commit `.env` files.** The token is read from `process.env.GITHUB_TOKEN` at build time only.
+
+## Deploy
+
+The project deploys to Cloudflare Pages. See [`DEPLOY.md`](./DEPLOY.md) for instructions.
+
+## Architecture
+
+```
+src/
+├── app/
+│   ├── core/          # Models (interfaces), services (HTTP + local storage)
+│   ├── features/      # Lazy-loaded pages: about, contact, experience, hero, not-found, projects, skills
+│   ├── layout/        # Header, footer (shared across all routes)
+│   └── shared/        # Reusable components: button, error-state, loading-spinner, section-heading, skill-badge
+├── assets/
+│   ├── data/          # JSON sources (experience, profile, projects, skills)
+│   └── docs/          # CV PDF
+├── main.ts            # App bootstrap
+└── styles.css         # Global styles + Tailwind directives
+```
+
+State follows a `DataState<T>` pattern: `idle → loading → success | error`, driven by Angular Signals.
+
+## Author
+
+**Eduardo Garay**
+
+- GitHub: [@EduardoGaray57](https://github.com/EduardoGaray57)
